@@ -2,6 +2,8 @@ import GameComponent from "../../GameComponent.js";
 import React from "react";
 import UserApi from "../../UserApi.js";
 import "./fight.css";
+import P5Wrapper from "react-p5-wrapper";
+import sketch from "./sketch.js";
 
 export default class fight extends GameComponent {
   constructor(props) {
@@ -41,7 +43,8 @@ export default class fight extends GameComponent {
     if (true) {
       return (
         <div>
-          <canvas ref="game" />
+          {/* <canvas ref="game" /> */}
+          <P5Wrapper sketch={sketch} />
         </div>
       );
     } else {
@@ -59,25 +62,25 @@ export default class fight extends GameComponent {
     }
   }
 
-  componentDidMount() {
-    const canvas = this.refs.game;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  // componentDidMount() {
+  //   const canvas = this.refs.game;
+  //   canvas.width = window.innerWidth;
+  //   canvas.height = window.innerHeight;
 
-    const ctx = canvas.getContext("2d");
+  //   const ctx = canvas.getContext("2d");
 
-    //user 1 character
-    ctx.beginPath();
-    ctx.rect(0, 0, 10, 10);
-    ctx.fillStyle = "white";
-    ctx.fill();
+  //   //user 1 character
+  //   ctx.beginPath();
+  //   ctx.rect(0, 0, 10, 10);
+  //   ctx.fillStyle = "white";
+  //   ctx.fill();
 
-    window.addEventListener("keypress", function() {});
+  //   window.addEventListener("keypress", function() {});
 
-    //user 2 character
-    ctx.beginPath();
-    ctx.rect(100, 0, 10, 10);
-    ctx.fillStyle = "red";
-    ctx.fill();
-  }
+  //   //user 2 character
+  //   ctx.beginPath();
+  //   ctx.rect(100, 0, 10, 10);
+  //   ctx.fillStyle = "red";
+  //   ctx.fill();
+  // }
 }

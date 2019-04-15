@@ -10,7 +10,8 @@
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-json-view": "^1.19.1",
-    "react-router-dom": "^4.3.1"
+    "react-router-dom": "^4.3.1",
+    "react-p5-wrapper": "0.0.4"
   },
   "devDependencies": {
     "react-scripts": "^2.1.8"
@@ -21,10 +22,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
 }
