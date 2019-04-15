@@ -1,13 +1,24 @@
 import GameComponent from "../../GameComponent.js";
 import React from "react";
 import UserApi from "../../UserApi.js";
+import "./fight.css";
 
 export default class fight extends GameComponent {
   constructor(props) {
     super(props);
     this.getSessionDatabaseRef().set({
-      text: "Good bye, World!"
+      text: "Hello, World! Its april 15"
     });
+  }
+
+  onSessionDataChanged(data) {
+    console.log(data.user_id);
+  }
+  handleButtonClick() {
+    this.getSessionDatabaseRef().set({
+      user_id: UserApi.getName(this.getMyUserId())
+    });
+    /*  if()           */
   }
 
   render() {
@@ -27,15 +38,46 @@ export default class fight extends GameComponent {
       identity = "guest";
     }
 
-    this.getSessionDatabaseRef().set({ text: "Hello, World!" });
-    return (
-      <div>
-        <p>Session ID: {id}</p>
-        <p>Session creator: {creator}</p>
-        <p>Session users:</p>
-        <ul>{users} </ul>
-        <p>I am the {identity}!</p>
-      </div>
-    );
+    if (true) {
+      return (
+        <div>
+          <canvas ref="game" />
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <div id="logInPage">
+            <p>Session ID: {id}</p>
+            <p>Session creator: {creator}</p>
+            <p>Session users:</p>
+            <ul>{users} </ul>
+            <p>I am the {identity}!</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  componentDidMount() {
+    const canvas = this.refs.game;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    //user 1 character
+    ctx.beginPath();
+    ctx.rect(0, 0, 10, 10);
+    ctx.fillStyle = "white";
+    ctx.fill();
+
+    window.addEventListener("keypress", function() {});
+
+    //user 2 character
+    ctx.beginPath();
+    ctx.rect(100, 0, 10, 10);
+    ctx.fillStyle = "red";
+    ctx.fill();
   }
 }
