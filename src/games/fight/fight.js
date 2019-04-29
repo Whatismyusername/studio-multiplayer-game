@@ -20,8 +20,16 @@ export default class fight extends GameComponent {
     this.getSessionDatabaseRef().set({
       user_id: UserApi.getName(this.getMyUserId())
     });
-    /*  if()           */
   }
+
+  //  class player {
+  //    constructor(health ,position ,characterType){
+  //     this.health = health;
+  //     this.position = position;
+  //     this.characterType = characterType;
+  // }
+  //
+  // var p1 = player(100,0,"magician");
 
   render() {
     //Identify the Users
@@ -83,4 +91,9 @@ export default class fight extends GameComponent {
   //   ctx.fillStyle = "red";
   //   ctx.fill();
   // }
+}
+// }
+// }
+export function playerAction(key) {
+  console.log(key);
 }
