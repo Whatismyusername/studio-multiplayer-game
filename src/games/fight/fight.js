@@ -9,27 +9,46 @@ export default class fight extends GameComponent {
   constructor(props) {
     super(props);
     this.getSessionDatabaseRef().set({
-      text: "Hello, World! Its april 15"
+      player1Health: 100,
+      player1XPosition: 0,
+      player1YPosition: 0,
+      player1Charactertype: "magician",
+      player2Health: 100,
+      player2XPosition: 50,
+      player2YPosition: 0,
+      player2Charactertype: "magician"
     });
   }
 
   onSessionDataChanged(data) {
     console.log(data.user_id);
+    console.log(data);
   }
   handleButtonClick() {
     this.getSessionDatabaseRef().set({
       user_id: UserApi.getName(this.getMyUserId())
     });
   }
-
-  //  class player {
-  //    constructor(health ,position ,characterType){
-  //     this.health = health;
-  //     this.position = position;
-  //     this.characterType = characterType;
-  // }
-  //
-  // var p1 = player(100,0,"magician");
+  getMyUser() {
+    var myUserId = this.getGetMyUserId;
+    var creatorUserId = this.getSessionCreatorUserId();
+    if (myUserId === creatorUserId) {
+      return "player 1";
+    } else {
+      return "player 2";
+    }
+  }
+  handleButtonClick(action) {
+    var player2NewX = this.state.player2XPosition;
+    var player2NewY = this.stateplayer2YPosition;
+    var player1NewX = this.stateplayer1XPosition;
+    var player1NewY = this.stateplayer1YPosition;
+    if (this.getMyUser() === "player 1" && action === RIGHTARROW) {
+      this.getSessionDatabaseRef().update({
+        player1XPosition: player2NewX
+      });
+    }
+  }
 
   render() {
     //Identify the Users
@@ -94,6 +113,4 @@ export default class fight extends GameComponent {
 }
 // }
 // }
-export function playerAction(key) {
-  console.log(key);
-}
+export function playerAction(key) {}
