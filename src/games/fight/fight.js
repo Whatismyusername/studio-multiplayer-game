@@ -3,34 +3,35 @@ import React from "react";
 import UserApi from "../../UserApi.js";
 import "./fight.css";
 import P5Wrapper from "react-p5-wrapper";
-import sketch from "./sketch.js";
+import sketchFactory from "./sketch.js";
 
 export default class fight extends GameComponent {
   constructor(props) {
     super(props);
+
     this.getSessionDatabaseRef().set({
-      player1Health: 100,
-      player1XPosition: 0,
-      player1YPosition: 0,
-      player1Charactertype: "magician",
-      player2Health: 100,
-      player2XPosition: 50,
-      player2YPosition: 0,
-      player2Charactertype: "magician"
+      p1: {
+        characterType: "magician",
+        playerAction: {}
+      },
+      p2: {
+        characterType: "magician",
+        playerAction: {}
+      }
     });
   }
 
   onSessionDataChanged(data) {
-    console.log(data.user_id);
     console.log(data);
   }
+
   handleButtonClick() {
     this.getSessionDatabaseRef().set({
       user_id: UserApi.getName(this.getMyUserId())
     });
   }
   getMyUser() {
-    var myUserId = this.getGetMyUserId;
+    var myUserId = this.getMyUserId();
     var creatorUserId = this.getSessionCreatorUserId();
     if (myUserId === creatorUserId) {
       return "player 1";
@@ -38,15 +39,21 @@ export default class fight extends GameComponent {
       return "player 2";
     }
   }
-  handleButtonClick(action) {
-    var player2NewX = this.state.player2XPosition;
-    var player2NewY = this.stateplayer2YPosition;
-    var player1NewX = this.stateplayer1XPosition;
-    var player1NewY = this.stateplayer1YPosition;
-    if (this.getMyUser() === "player 1" && action === RIGHTARROW) {
-      this.getSessionDatabaseRef().update({
-        player1XPosition: player2NewX
-      });
+
+  updateFirebase() {
+    if (this.getMyUser() === "player 1") {
+      this.getSessionDatabaseRef()
+        .child("p1")
+        .update({
+          playerAction: playerAction
+        });
+    }
+    if (this.getMyUser() === "player 2") {
+      this.getSessionDatabaseRef()
+        .child("p2")
+        .update({
+          playerAction: playerAction
+        });
     }
   }
 
@@ -68,6 +75,7 @@ export default class fight extends GameComponent {
     }
 
     if (true) {
+      var sketch = sketchFactory(() => this.updateFirebase());
       return (
         <div>
           {/* <canvas ref="game" /> */}
@@ -88,29 +96,14 @@ export default class fight extends GameComponent {
       );
     }
   }
-
-  // componentDidMount() {
-  //   const canvas = this.refs.game;
-  //   canvas.width = window.innerWidth;
-  //   canvas.height = window.innerHeight;
-
-  //   const ctx = canvas.getContext("2d");
-
-  //   //user 1 character
-  //   ctx.beginPath();
-  //   ctx.rect(0, 0, 10, 10);
-  //   ctx.fillStyle = "white";
-  //   ctx.fill();
-
-  //   window.addEventListener("keypress", function() {});
-
-  //   //user 2 character
-  //   ctx.beginPath();
-  //   ctx.rect(100, 0, 10, 10);
-  //   ctx.fillStyle = "red";
-  //   ctx.fill();
-  // }
 }
-// }
-// }
-export function playerAction(key) {}
+
+export var playerAction = {
+  left: false,
+  right: false,
+  jump: false,
+  basic_attack: false,
+  ability_1: false,
+  ability_2: false,
+  ability_3: false
+};
