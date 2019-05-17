@@ -101,11 +101,9 @@ export default function sketchFactory(updateFirebase) {
 
     var p1 = new p.Character(50, 520, "magician");
     var p2 = new p.Character(960, 520, "magician");
-
-    // p.keyPressed = () => {
-    //   if (key === "d") {
-    //     p1.x += 1;
-    //   }
-    // };
   };
+}
+
+export function firebase(data) {
+  // console.log(data);
 }

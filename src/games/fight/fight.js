@@ -8,6 +8,32 @@ import sketchFactory from "./sketch.js";
 export default class fight extends GameComponent {
   constructor(props) {
     super(props);
+    // this.state = {
+    //   p1: {
+    //     characterType: "magician",
+    //     playerAction: {
+    //       left: false,
+    //       right: false,
+    //       jump: false,
+    //       basic_attack: false,
+    //       ability_1: false,
+    //       ability_2: false,
+    //       ability_3: false
+    //     }
+    //   },
+    //   p2: {
+    //     characterType: "magician",
+    //     playerAction: {
+    //       left: false,
+    //       right: false,
+    //       jump: false,
+    //       basic_attack: false,
+    //       ability_1: false,
+    //       ability_2: false,
+    //       ability_3: false
+    //     }
+    //   }
+    // };
 
     this.getSessionDatabaseRef().set({
       p1: {
