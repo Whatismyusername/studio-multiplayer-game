@@ -2,31 +2,27 @@ import { playerAction } from "./fight.js";
 import { character } from "./character.js";
 import { keyPressed } from "./keyPressed.js";
 
-export default function sketchFactory(updateFirebase) {
+export default function sketchFactory(updateFirebase, data) {
   return function sketch(p) {
     let canvas;
-
+    var p1;
+    var p2;
     p.setup = () => {
+      console.log("setup");
       canvas = p.createCanvas(1080, 720);
       p.noStroke();
+      // p.frameRate(1);
+      p1 = new p.Character(50, 520, "magician");
+      p2 = new p.Character(960, 520, "magician");
     };
 
     p.draw = () => {
       p.background(0);
+      //p.checkingAction();
       p1.update();
       p2.update();
 
-      if (p.keyIsDown(68)) {
-        p1.action("moveRight");
-        playerAction.right = true;
-        updateFirebase();
-      }
-      if (playerAction.right) {
-        if (!p.keyIsDown(68)) {
-          playerAction.right = false;
-          updateFirebase();
-        }
-      }
+      p.keyPressed();
     };
 
     p.Character = function(x, y, characterType) {
@@ -38,6 +34,7 @@ export default function sketchFactory(updateFirebase) {
         p.rect(this.x, this.y, 70, 200);
       };
       this.action = function(action) {
+        console.log("action");
         if (action === "moveLeft") {
           this.x -= 10;
         }
@@ -53,57 +50,49 @@ export default function sketchFactory(updateFirebase) {
     };
 
     p.keyPressed = function() {
-      if (p.keyIsDown(68)) {
-        p1.action("moveRight");
-        playerAction.right = true;
-        updateFirebase();
-      } else {
-        // playerAction.right = false;
-        // updateFirebase();
-      }
+      playerAction.left = false;
+      playerAction.right = false;
+      playerAction.jump = false;
+      playerAction.basic_attack = false;
+      playerAction.ability_1 = false;
+      playerAction.ability_2 = false;
+      playerAction.ability_3 = false;
 
       if (p.keyIsDown(65)) {
-        p1.action("moveLeft");
         playerAction.left = true;
-        updateFirebase();
-      } else {
-        playerAction.left = false;
-        updateFirebase();
       }
-
+      if (p.keyIsDown(68)) {
+        playerAction.right = true;
+      }
       if (p.keyIsDown(75)) {
-        p1.action("jump");
         playerAction.jump = true;
-        updateFirebase();
-      } else {
-        playerAction.jump = false;
-        updateFirebase();
       }
-
       if (p.keyIsDown(74)) {
-        p1.action("basic_attack");
         playerAction.basic_attack = true;
-        updateFirebase();
-      } else {
-        playerAction.basic_attack = false;
-        updateFirebase();
       }
-
       if (p.keyIsDown(85)) {
-        p1.action("ability_1");
         playerAction.ability_1 = true;
-        updateFirebase();
-      } else {
-        playerAction.ability_1 = false;
-        updateFirebase();
       }
+      updateFirebase();
     };
 
-    var p1 = new p.Character(50, 520, "magician");
-    var p2 = new p.Character(960, 520, "magician");
+    p.checkingAction = function() {
+      if (data().p1.playerAction) {
+        if (data().p1.playerAction.left) {
+          p1.action("moveLeft");
+        }
+        if (data().p1.playerAction.right) {
+          p1.action("moveRight");
+        }
+      }
+      if (data().p2.playerAction) {
+        if (data().p2.playerAction.left) {
+          p2.action("moveLeft");
+        }
+        if (data().p2.playerAction.right) {
+          p2.action("moveRight");
+        }
+      }
+    };
   };
-}
-
-export function firebase(data) {
-  // console.log(data);
 }

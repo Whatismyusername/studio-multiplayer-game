@@ -8,33 +8,35 @@ import sketchFactory from "./sketch.js";
 export default class fight extends GameComponent {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   p1: {
-    //     characterType: "magician",
-    //     playerAction: {
-    //       left: false,
-    //       right: false,
-    //       jump: false,
-    //       basic_attack: false,
-    //       ability_1: false,
-    //       ability_2: false,
-    //       ability_3: false
-    //     }
-    //   },
-    //   p2: {
-    //     characterType: "magician",
-    //     playerAction: {
-    //       left: false,
-    //       right: false,
-    //       jump: false,
-    //       basic_attack: false,
-    //       ability_1: false,
-    //       ability_2: false,
-    //       ability_3: false
-    //     }
-    //   }
-    // };
+    this.state = {
+      p1: {
+        characterType: "magician",
+        playerAction: {
+          left: false,
+          right: false,
+          jump: false,
+          basic_attack: false,
+          ability_1: false,
+          ability_2: false,
+          ability_3: false
+        }
+      },
+      p2: {
+        characterType: "magician",
+        playerAction: {
+          left: false,
+          right: false,
+          jump: false,
+          basic_attack: false,
+          ability_1: false,
+          ability_2: false,
+          ability_3: false
+        }
+      },
+      sketch: sketchFactory(() => this.updateFirebase(), () => this.getState())
+    };
 
+    console.log(this.state.p1.playerAction.left);
     this.getSessionDatabaseRef().set({
       p1: {
         characterType: "magician",
@@ -47,8 +49,13 @@ export default class fight extends GameComponent {
     });
   }
 
+  getState() {
+    return this.state;
+  }
+
   onSessionDataChanged(data) {
-    console.log(data);
+    this.setState(data);
+    this.state.sketch.checkingAction();
   }
 
   handleButtonClick() {
@@ -101,11 +108,10 @@ export default class fight extends GameComponent {
     }
 
     if (true) {
-      var sketch = sketchFactory(() => this.updateFirebase());
       return (
         <div>
           {/* <canvas ref="game" /> */}
-          <P5Wrapper sketch={sketch} />
+          <P5Wrapper sketch={this.state.sketch} />
         </div>
       );
     } else {
