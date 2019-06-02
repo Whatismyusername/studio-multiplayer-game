@@ -1,19 +1,45 @@
-import { playerAction } from "./fight.js";
-import { character } from "./character.js";
-import { keyPressed } from "./keyPressed.js";
+import { playerAction, playerLocation } from "./fight.js";
+import { character, characterList } from "./character.js";
 
-export default function sketchFactory(updateFirebase, data) {
+export default function sketchFactory(
+  updateFirebase,
+  data,
+  getMyUser,
+  thisCharacter
+) {
   return function sketch(p) {
     let canvas;
     var p1;
     var p2;
+    var char = "magician";
     p.setup = () => {
-      console.log("setup");
       canvas = p.createCanvas(1080, 720);
       p.noStroke();
       // p.frameRate(1);
-      p1 = new p.Character(50, 520, "magician");
-      p2 = new p.Character(960, 520, "magician");
+      p.setupPlayerLocation();
+      if (data().p1.characterType === "magician") {
+        p1 = new p.Magician(
+          data().p1.playerLocation.x,
+          data().p1.playerLocation.y
+        );
+      } else if (data().p1.characterType === "warrior") {
+        p1 = new p.Warrior(
+          data().p1.playerLocation.x,
+          data().p1.playerLocation.y
+        );
+      }
+      if (data().p2.characterType === "magician") {
+        p2 = new p.Magician(
+          data().p2.playerLocation.x,
+          data().p2.playerLocation.y
+        );
+      } else if (data().p2.characterType === "warrior") {
+        p1 = new p.Warrior(
+          data().p2.playerLocation.x,
+          data().p2.playerLocation.y
+        );
+      }
+      console.log(getMyUser());
     };
 
     p.draw = () => {
@@ -21,14 +47,30 @@ export default function sketchFactory(updateFirebase, data) {
       //p.checkingAction();
       p1.update();
       p2.update();
-
       p.keyPressed();
     };
 
-    p.Character = function(x, y, characterType) {
+    p.setupPlayerLocation = () => {
+      if (getMyUser() === "player 1") {
+        console.log(getMyUser());
+        playerLocation.x = data().p1.playerLocation.x;
+        playerLocation.y = data().p1.playerLocation.y;
+      }
+      if (getMyUser() === "player 2") {
+        console.log(getMyUser());
+        playerLocation.x = data().p2.playerLocation.x;
+        playerLocation.y = data().p2.playerLocation.y;
+      }
+      console.log(playerLocation);
+    };
+
+    p.Magician = function(x, y) {
       this.x = x;
       this.y = y;
-      //this.speed = character.charaterType.speed;
+      this.hp = character.magician.hp;
+      this.attack = character.magician.attack;
+      this.defense = character.magician.defense;
+      this.speed = character.magician.speed;
 
       this.update = function() {
         p.rect(this.x, this.y, 70, 200);
@@ -36,10 +78,10 @@ export default function sketchFactory(updateFirebase, data) {
       this.action = function(action) {
         console.log("action");
         if (action === "moveLeft") {
-          this.x -= 10;
+          this.x -= this.speed;
         }
         if (action === "moveRight") {
-          this.x += 10;
+          this.x += this.speed;
         }
         if (action === "jump") {
           this.y += 10;
@@ -50,22 +92,26 @@ export default function sketchFactory(updateFirebase, data) {
     };
 
     p.keyPressed = function() {
-      playerAction.left = false;
-      playerAction.right = false;
-      playerAction.jump = false;
       playerAction.basic_attack = false;
       playerAction.ability_1 = false;
       playerAction.ability_2 = false;
       playerAction.ability_3 = false;
 
       if (p.keyIsDown(65)) {
-        playerAction.left = true;
+        if (playerLocation.x > 0) {
+          playerLocation.x -= thisCharacter().speed;
+          console.log(playerLocation);
+        }
       }
       if (p.keyIsDown(68)) {
-        playerAction.right = true;
+        if (playerLocation.x < 1080) {
+          playerLocation.x += thisCharacter().speed;
+        }
+
+        console.log(playerLocation);
       }
       if (p.keyIsDown(75)) {
-        playerAction.jump = true;
+        playerLocation.y -= 10;
       }
       if (p.keyIsDown(74)) {
         playerAction.basic_attack = true;

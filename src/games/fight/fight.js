@@ -4,6 +4,7 @@ import UserApi from "../../UserApi.js";
 import "./fight.css";
 import P5Wrapper from "react-p5-wrapper";
 import sketchFactory from "./sketch.js";
+import { character, characterList } from "./character.js";
 
 export default class fight extends GameComponent {
   constructor(props) {
@@ -11,6 +12,10 @@ export default class fight extends GameComponent {
     this.state = {
       p1: {
         characterType: "magician",
+        playerLocation: {
+          x: 50,
+          y: 520
+        },
         playerAction: {
           left: false,
           right: false,
@@ -18,11 +23,16 @@ export default class fight extends GameComponent {
           basic_attack: false,
           ability_1: false,
           ability_2: false,
-          ability_3: false
+          ability_3: false,
+          facing: "right"
         }
       },
       p2: {
         characterType: "magician",
+        playerLocation: {
+          x: 960,
+          y: 520
+        },
         playerAction: {
           left: false,
           right: false,
@@ -30,20 +40,33 @@ export default class fight extends GameComponent {
           basic_attack: false,
           ability_1: false,
           ability_2: false,
-          ability_3: false
+          ability_3: false,
+          facing: "left"
         }
       },
-      sketch: sketchFactory(() => this.updateFirebase(), () => this.getState())
+      sketch: sketchFactory(
+        () => this.updateFirebase(),
+        () => this.getState(),
+        () => this.getMyUser(),
+        () => this.identifyCharacter()
+      )
     };
 
-    console.log(this.state.p1.playerAction.left);
     this.getSessionDatabaseRef().set({
       p1: {
         characterType: "magician",
+        characterLocation: {
+          x: 50,
+          y: 520
+        },
         playerAction: {}
       },
       p2: {
         characterType: "magician",
+        characterLocation: {
+          x: 960,
+          y: 520
+        },
         playerAction: {}
       }
     });
@@ -53,9 +76,19 @@ export default class fight extends GameComponent {
     return this.state;
   }
 
+  identifyCharacter() {
+    let char;
+    if (this.getMyUser() === "player 1") {
+      char = this.state.p1.characterType;
+    }
+    if (this.getMyUser() === "player 2") {
+      char = this.state.p2.characterType;
+    }
+    return character[char];
+  }
+
   onSessionDataChanged(data) {
     this.setState(data);
-    this.state.sketch.checkingAction();
   }
 
   handleButtonClick() {
@@ -63,6 +96,7 @@ export default class fight extends GameComponent {
       user_id: UserApi.getName(this.getMyUserId())
     });
   }
+
   getMyUser() {
     var myUserId = this.getMyUserId();
     var creatorUserId = this.getSessionCreatorUserId();
@@ -106,7 +140,6 @@ export default class fight extends GameComponent {
     } else {
       identity = "guest";
     }
-
     if (true) {
       return (
         <div>
@@ -131,11 +164,13 @@ export default class fight extends GameComponent {
 }
 
 export var playerAction = {
-  left: false,
-  right: false,
-  jump: false,
   basic_attack: false,
   ability_1: false,
   ability_2: false,
   ability_3: false
+};
+
+export var playerLocation = {
+  x: 0,
+  y: 0
 };
