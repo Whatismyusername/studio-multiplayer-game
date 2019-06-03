@@ -55,19 +55,31 @@ export default class fight extends GameComponent {
     this.getSessionDatabaseRef().set({
       p1: {
         characterType: "magician",
-        characterLocation: {
+        playerLocation: {
           x: 50,
           y: 520
         },
-        playerAction: {}
+        playerAction: {
+          basic_attack: false,
+          ability_1: false,
+          ability_2: false,
+          ability_3: false,
+          facing: 1
+        }
       },
       p2: {
         characterType: "magician",
-        characterLocation: {
+        playerLocation: {
           x: 960,
           y: 520
         },
-        playerAction: {}
+        playerAction: {
+          basic_attack: false,
+          ability_1: false,
+          ability_2: false,
+          ability_3: false,
+          facing: -1
+        }
       }
     });
   }
@@ -98,9 +110,7 @@ export default class fight extends GameComponent {
   }
 
   getMyUser() {
-    var myUserId = this.getMyUserId();
-    var creatorUserId = this.getSessionCreatorUserId();
-    if (myUserId === creatorUserId) {
+    if (this.getMyUserId() === this.getSessionCreatorUserId()) {
       return "player 1";
     } else {
       return "player 2";
@@ -112,6 +122,7 @@ export default class fight extends GameComponent {
       this.getSessionDatabaseRef()
         .child("p1")
         .update({
+          playerLocation: playerLocation,
           playerAction: playerAction
         });
     }
@@ -119,6 +130,7 @@ export default class fight extends GameComponent {
       this.getSessionDatabaseRef()
         .child("p2")
         .update({
+          playerLocation: playerLocation,
           playerAction: playerAction
         });
     }
@@ -167,7 +179,8 @@ export var playerAction = {
   basic_attack: false,
   ability_1: false,
   ability_2: false,
-  ability_3: false
+  ability_3: false,
+  facing: ""
 };
 
 export var playerLocation = {

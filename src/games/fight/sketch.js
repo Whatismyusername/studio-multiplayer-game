@@ -11,7 +11,12 @@ export default function sketchFactory(
     let canvas;
     var p1;
     var p2;
-    var char = "magician";
+    var magicianPic;
+
+    p.preload = () => {
+      // magicianPic = p.loadImage(".images/magician/wand.png");
+    };
+
     p.setup = () => {
       canvas = p.createCanvas(1080, 720);
       p.noStroke();
@@ -39,15 +44,19 @@ export default function sketchFactory(
           data().p2.playerLocation.y
         );
       }
-      console.log(getMyUser());
+      console.log();
+      // p.image(magicianPic, 50, 520, 70, 200);
     };
 
     p.draw = () => {
       p.background(0);
       //p.checkingAction();
+      p1.x = data().p1.playerLocation.x;
       p1.update();
+      p2.x = data().p2.playerLocation.x;
       p2.update();
       p.keyPressed();
+      // p.image(magicianPic, 50, 520, 70, 200);
     };
 
     p.setupPlayerLocation = () => {
@@ -76,16 +85,6 @@ export default function sketchFactory(
         p.rect(this.x, this.y, 70, 200);
       };
       this.action = function(action) {
-        console.log("action");
-        if (action === "moveLeft") {
-          this.x -= this.speed;
-        }
-        if (action === "moveRight") {
-          this.x += this.speed;
-        }
-        if (action === "jump") {
-          this.y += 10;
-        }
         if (action === "basic_attack") {
         }
       };
@@ -100,15 +99,16 @@ export default function sketchFactory(
       if (p.keyIsDown(65)) {
         if (playerLocation.x > 0) {
           playerLocation.x -= thisCharacter().speed;
-          console.log(playerLocation);
+          playerAction.facing = "left";
         }
+        console.log(data().p1.playerLocation.x, data().p1.playerAction.facing);
       }
       if (p.keyIsDown(68)) {
         if (playerLocation.x < 1080) {
           playerLocation.x += thisCharacter().speed;
+          playerAction.facing = "right";
         }
-
-        console.log(playerLocation);
+        console.log(data().p1.playerLocation.x, data().p1.playerAction.facing);
       }
       if (p.keyIsDown(75)) {
         playerLocation.y -= 10;
@@ -122,23 +122,27 @@ export default function sketchFactory(
       updateFirebase();
     };
 
-    p.checkingAction = function() {
-      if (data().p1.playerAction) {
-        if (data().p1.playerAction.left) {
-          p1.action("moveLeft");
-        }
-        if (data().p1.playerAction.right) {
-          p1.action("moveRight");
-        }
-      }
-      if (data().p2.playerAction) {
-        if (data().p2.playerAction.left) {
-          p2.action("moveLeft");
-        }
-        if (data().p2.playerAction.right) {
-          p2.action("moveRight");
-        }
-      }
+    // p.checkingAction = function() {
+    //   if (data().p1.playerAction) {
+    //     if (data().p1.playerAction.left) {
+    //       p1.action("moveLeft");
+    //     }
+    //     if (data().p1.playerAction.right) {
+    //       p1.action("moveRight");
+    //     }
+    //   }
+    //   if (data().p2.playerAction) {
+    //     if (data().p2.playerAction.left) {
+    //       p2.action("moveLeft");
+    //     }
+    //     if (data().p2.playerAction.right) {
+    //       p2.action("moveRight");
+    //     }
+    //   }
+    // };
+
+    p.checkLocation = function() {
+      console.log(data().p1.playerLocation.x);
     };
   };
 }
