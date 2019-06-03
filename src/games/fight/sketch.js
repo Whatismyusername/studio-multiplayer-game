@@ -23,8 +23,8 @@ export default function sketchFactory(
       magicianPic.normal = p.loadImage(
         "https://raw.githubusercontent.com/Whatismyusername/studio-multiplayer-game/master/src/games/fight/images/magician/whole.jpg"
       );
-      magicianPic.normal = p.loadImage(
-        "https://raw.githubusercontent.com/Whatismyusername/studio-multiplayer-game/master/src/games/fight/images/magician/whole-mirrored.jpg"
+      magicianPic.mirrored = p.loadImage(
+        "https://raw.githubusercontent.com/Whatismyusername/studio-multiplayer-game/master/src/games/fight/images/magician/whole-mirror.jpg"
       );
     };
 
@@ -113,8 +113,9 @@ export default function sketchFactory(
         // p.rect(this.x, this.y, 70, 200);
         if (this.facing === "left") {
           p.image(magicianPic.mirrored, this.x, this.y, 200, 200);
+        } else {
+          p.image(magicianPic.normal, this.x, this.y, 200, 200);
         }
-        p.image(magicianPic.normal, this.x, this.y, 200, 200);
       };
 
       this.action = function(enemy, action, facing) {
