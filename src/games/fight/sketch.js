@@ -11,18 +11,27 @@ export default function sketchFactory(
     let canvas;
     var p1;
     var p2;
-    var magicianPic;
-    var p1MagicBall;
-    var p2MagicBall;
+    var magicianPic = {
+      normal: "",
+      mirrored: ""
+    };
+    var MagicBall = [];
+    var frameRate = 60;
+    var gameOver = false;
 
     p.preload = () => {
-      // magicianPic = p.loadImage(".images/magician/wand.png");
+      magicianPic.normal = p.loadImage(
+        "https://raw.githubusercontent.com/Whatismyusername/studio-multiplayer-game/master/src/games/fight/images/magician/whole.jpg"
+      );
+      magicianPic.normal = p.loadImage(
+        "https://raw.githubusercontent.com/Whatismyusername/studio-multiplayer-game/master/src/games/fight/images/magician/whole-mirrored.jpg"
+      );
     };
 
     p.setup = () => {
       canvas = p.createCanvas(1080, 720);
       p.noStroke();
-      // p.frameRate(1);
+      p.frameRate(frameRate);
       p.setupPlayerLocation();
       if (data().p1.characterType === "magician") {
         p1 = new p.Magician(
@@ -47,24 +56,21 @@ export default function sketchFactory(
         );
       }
       console.log();
-      // p.image(magicianPic, 50, 520, 70, 200);
     };
 
     p.draw = () => {
       p.background(0);
       p.checkingAction();
       p1.x = data().p1.playerLocation.x;
-      p1.update();
+      p1.facing = data().p1.playerAction.facing;
+      p1.display();
       p2.x = data().p2.playerLocation.x;
-      p2.update();
+      p2.facing = data().p2.playerAction.facing;
+      p2.display();
       p.keyPressed();
-      if (p1MagicBall) {
-        p1MagicBall.display();
-      }
-      if (p2MagicBall) {
-        p2MagicBall.display();
-      }
-      // p.image(magicianPic, 50, 520, 70, 200);
+      p.displayMagicBall();
+      p.displayHealth();
+      p.gameOver();
     };
 
     p.setupPlayerLocation = () => {
@@ -85,28 +91,63 @@ export default function sketchFactory(
       this.x = x;
       this.y = y;
       this.hp = character.magician.hp;
+      this.full_hp = character.magician.hp;
       this.attack_damage = character.magician.attack_damage;
       this.defense = character.magician.defense;
       this.speed = character.magician.speed;
       this.basic_attack_disabled = false;
+      this.facing = "right";
+      this.disabled_timer = {
+        basic_attack: frameRate
+      };
 
       this.update = function() {
-        p.rect(this.x, this.y, 70, 200);
+        if (this.disabled_timer.basic_attack) {
+          console.log("Basic Attack Is Disabled");
+        }
       };
+
+      this.display = function() {
+        //character
+        // p.fill(255);
+        // p.rect(this.x, this.y, 70, 200);
+        if (this.facing === "left") {
+          p.image(magicianPic.mirrored, this.x, this.y, 200, 200);
+        }
+        p.image(magicianPic.normal, this.x, this.y, 200, 200);
+      };
+
       this.action = function(enemy, action, facing) {
+        this.enemy = enemy;
         if (action === "basic_attack") {
           if (!this.basic_attack_disabled) {
             console.log("basic attcak!");
-            p1MagicBall = new p.MagicBall(
-              enemy,
-              this.x,
-              this.y,
-              facing,
-              this.attack_damage
+            MagicBall.push(
+              new p.MagicBall(
+                this.enemy,
+                this.x,
+                this.y,
+                facing,
+                this.attack_damage
+              )
             );
-            console.log(enemy, this.x, this.y, facing);
+            console.log(this.enemy, this.x, this.y, facing);
           }
         }
+      };
+
+      this.damaged = function(damage) {
+        if (this.hp > 0) {
+          this.hp -= damage - damage * this.defense;
+        }
+        if (this.hp <= 0) {
+          this.hp = 0;
+          this.dies();
+        }
+      };
+
+      this.dies = function() {
+        gameOver = true;
       };
     };
 
@@ -114,35 +155,48 @@ export default function sketchFactory(
       this.x = x;
       this.y = y + (720 - y) / 2;
       this.radius = 80;
-      this.disappear = false;
-      setTimeout(function() {
-        this.disappear = true;
-      }, 3000);
+      this.disappear_after = frameRate * 1.5;
+      this.speed = 20;
+      this.enemy = enemy;
+
+      console.log(this.enemy);
       this.display = function() {
-        if (!this.disappear) {
-          this.update();
-          p.arc(this.x, this.y, this.radius, this.radius, 0, Math.PI * 2);
-        }
+        this.update();
+        p.fill(153, 102, 255);
+        p.arc(this.x, this.y, this.radius, this.radius, 0, Math.PI * 2);
       };
 
       this.update = function() {
         if (facing === "right") {
-          this.x += 30;
+          this.x += this.speed;
         }
         if (facing === "left") {
-          this.x -= 30;
+          this.x -= this.speed;
         }
+        this.disappear_after--;
+        this.collision();
       };
 
       this.collision = function() {
         if (
-          this.x + this.radius >= enemy.x &&
-          this.x - this.radius <= enemy.x
+          this.x + this.radius >= this.enemy.x &&
+          this.x - this.radius <= this.enemy.x
         ) {
+          console.log("hits enemy");
           enemy.damaged(damage);
-          this.disappear = true;
+          this.disappear_after = 0;
         }
       };
+    };
+
+    p.displayMagicBall = function() {
+      for (var i = 0; i < MagicBall.length; i++) {
+        MagicBall[i].display();
+        if (MagicBall[i].disappear_after <= 1) {
+          MagicBall.splice(i, 1);
+          console.log(MagicBall);
+        }
+      }
     };
 
     p.keyPressed = function() {
@@ -170,7 +224,6 @@ export default function sketchFactory(
       }
       if (p.keyIsDown(74)) {
         playerAction.basic_attack = true;
-        console.log(data().p1.playerAction.basic_attack);
       }
       if (p.keyIsDown(85)) {
         playerAction.ability_1 = true;
@@ -190,6 +243,95 @@ export default function sketchFactory(
 
     p.checkLocation = function() {
       console.log(data().p1.playerLocation.x);
+    };
+
+    p.displayHealth = function() {
+      var health_bar = {
+        p1: {
+          xPos: 10,
+          yPos: 10,
+          width: 400,
+          height: 100
+        },
+        p2: {
+          xPos: 670,
+          yPos: 10,
+          width: 400,
+          height: 100
+        }
+      };
+      // p1 Health Bar Background
+      p.stroke(255);
+      p.fill(50);
+      p.rect(
+        health_bar.p1.xPos,
+        health_bar.p1.yPos,
+        health_bar.p1.width,
+        health_bar.p1.height
+      );
+      // p1 Health Bar
+      p.noStroke();
+      p.fill(102, 255, 102);
+      p.rect(
+        health_bar.p1.xPos,
+        health_bar.p1.yPos,
+        health_bar.p1.width * (p1.hp / p1.full_hp),
+        health_bar.p1.height
+      );
+      // p1 Health Bar Text
+      p.noStroke();
+      p.textSize(80);
+      p.fill(0);
+      p.text(
+        p1.hp + " / " + p1.full_hp,
+        health_bar.p1.xPos,
+        health_bar.p1.yPos + health_bar.p1.height - 10
+      );
+
+      // p2 Health Bar Background
+      p.stroke(255);
+      p.fill(50);
+      p.rect(
+        health_bar.p2.xPos,
+        health_bar.p2.yPos,
+        health_bar.p2.width,
+        health_bar.p2.height
+      );
+      // p2 Health Bar
+      p.noStroke();
+      p.fill(102, 255, 102);
+      p.rect(
+        health_bar.p2.xPos,
+        health_bar.p2.yPos,
+        health_bar.p2.width * (p2.hp / p2.full_hp),
+        health_bar.p2.height
+      );
+      // p1 Health Bar Text
+      p.noStroke();
+      p.textSize(80);
+      p.fill(0);
+      p.text(
+        p2.hp + " / " + p2.full_hp,
+        health_bar.p2.xPos,
+        health_bar.p2.yPos + health_bar.p2.height - 10
+      );
+    };
+
+    p.gameOver = function() {
+      if (gameOver) {
+        p.background(0);
+        p.fill(255);
+        p.textSize(80);
+        if (p1.hp > p2.hp) {
+          p.text("Player 1 has won the game!", 20, 400);
+        }
+        if (p2.hp > p1.hp) {
+          p.text("Player 2 has won the game!", 20, 400);
+        }
+        if (p1.hp === p2.hp) {
+          p.text("Tie!", 20, 400);
+        }
+      }
     };
   };
 }

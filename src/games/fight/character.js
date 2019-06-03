@@ -1,8 +1,8 @@
 export var character = {
   magician: {
     hp: 100,
-    attack_damage: 30,
-    defense: 10,
+    attack_damage: 10,
+    defense: 0.2,
     speed: 10
   }
 };
